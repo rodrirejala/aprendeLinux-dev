@@ -150,10 +150,12 @@ Para garantizar un despliegue ágil y escalable, segui este flujo:
 4. Push a la rama (`git push origin feature/nueva-leccion`)
 5. Abre un Pull Request
 
+## 👨🏻‍💻 Seguire puliendo y agregando contenido a este Recurso 
+
 ## 📄 Licencia
 
 Este proyecto está bajo la licencia [MIT](LICENSE).
 
 ---
 
-🇪🇸 Hecho con ❤️ para la comunidad de Linux en español
+🇵🇾 Hecho con ❤️ para la comunidad de Linux en español
