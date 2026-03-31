@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-Una plataforma educativa interactiva para dominar Linux, desde los conceptos más básicos hasta la creación de scripts avanzados. Todo en una interfaz moderna y fluida.
+Un recuerso para aprender Linux, desde los conceptos más básicos hasta lo mas avanzados. Todo en una interfaz moderna y fluida.
 
 ## 📸 Preview
 
@@ -16,7 +16,7 @@ Una plataforma educativa interactiva para dominar Linux, desde los conceptos má
 
 El proyecto incluye **21 lecciones** estructuradas para aprender Linux de forma progresiva:
 
-### Lecciones del Curso
+### Lecciones
 
 | # | Título | Dificultad |
 |---|--------|------------|
@@ -44,7 +44,7 @@ El proyecto incluye **21 lecciones** estructuradas para aprender Linux de forma 
 
 ### Características
 
-- 📖 **21 lecciones** cubriendo desde conceptos básicos hasta scripts avanzados
+- 📖 **21 lecciones** cubriendo desde conceptos básicos hasta avanzados
 - 💻 **+50 ejercicios prácticos** para cada lección
 - 📚 **Catálogo de comandos** de terminal organizado por categorías
 - 🎨 **Syntax highlighting** en ejemplos de código (tema GitHub Dark)
@@ -82,60 +82,26 @@ El proyecto incluye **21 lecciones** estructuradas para aprender Linux de forma 
 - **Temas hermosos**: Integración perfecta con temas populares como GitHub Dark
 - **Performance**: Generación en build, cero overhead en runtime
 
-## 📦 Instalación
+## 🚀 Despliegue e Infraestructura
 
-```bash
-# Instalar dependencias
-npm install
+Este proyecto se encuentra desplegado utilizando una arquitectura de alto rendimiento y control total, aprovechando las capacidades de **CubePath** y el orquestador **Dokploy**.
 
-# Iniciar servidor de desarrollo
-npm run dev
-```
+### 🏗️ Stack Tecnológico
+* **Hosting:** [CubePath](https://cubepath.com/) (VPS Cloud de alta disponibilidad).
+* **PaaS:** [Dokploy](https://dokploy.com/) (Gestión de contenedores y despliegue continuo).
+* **Framework:** [Astro](https://astro.build/).
 
-El servidor de desarrollo estará disponible en `http://localhost:4321`
+### 🛠️ Configuración del Servidor
+Para garantizar un despliegue ágil y escalable, segui este flujo:
 
-## 🏗️ Build para Producción
+1.  **Aprovisionamiento en CubePath:** * Utilize la opción de **"Apps 1-Click"** de CubePath para levantar un VPS optimizado con **Dokploy**. Esto me permitió saltarnos la configuración manual del servidor 
+2.  **Gestión con Dokploy:**
+    * Configure un panel de control autogestionado dentro del VPS.
+    * Conecte este repositorio de GitHub para habilitar **CI/CD** automático.
+3.  **Build de Astro:**
+    * Dokploy se encarga de detectar los cambios en la rama principal, ejecutar el proceso de construcción de Astro y servir los archivos estáticos (o SSR) mediante un contenedor Docker optimizado.
 
-```bash
-# Generar archivos estáticos
-npm run build
-
-# Los archivos se generarán en la carpeta dist/
-```
-
-## 🌐 Deploy en VPS
-
-### Método Manual
-
-```bash
-# 1. Generar build
-npm run build
-
-# 2. Subir archivos al VPS (ajusta user y ruta)
-scp -r dist/* user@tu-vps:/var/www/tu-dominio/
-```
-
-### Configuración Nginx (ejemplo)
-
-```nginx
-server {
-    server_name tudominio.com;
-    root /var/www/tu-dominio;
-    index index.html;
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # Cacheo de archivos estáticos
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-}
-```
-
-## 📂 Estructura del Proyecto
+# 📂 Estructura del Proyecto
 
 ```
 /
