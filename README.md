@@ -25,6 +25,8 @@ Puedes ver la aplicación en vivo aquí:
 
 ![AprendeLinux comandos](docs/screenshots/comandos.png)
 
+![AprendeLinux modo claro](docs/screenshots/home_modo_claro.png)
+
 ## 📚 Contenido
 
 El proyecto incluye **21 lecciones** estructuradas para aprender Linux de forma progresiva:
