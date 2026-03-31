@@ -25,7 +25,7 @@ Puedes ver la aplicación en vivo aquí:
 
 ![AprendeLinux comandos](docs/screenshots/comandos.png)
 
-![AprendeLinux modo claro](docs/screenshots/home_modo_claro.png)
+![AprendeLinux ejercicios](docs/screenshots/ejercicios_practico.png)
 
 ## 📚 Contenido
 
