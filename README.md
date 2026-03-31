@@ -8,13 +8,22 @@
 
 [![Website](https://img.shields.io/badge/Visitar_Web-aprendelinux.dev-00A8E8?style=for-the-badge&logo=linux&logoColor=white)](https://aprendelinux.dev)
 
+
+
 Un recuerso para aprender Linux, desde los conceptos más básicos hasta lo mas avanzados. Todo en una interfaz moderna y fluida.
+
+## 🔗 Enlace del Proyecto
+
+Puedes ver la aplicación en vivo aquí:  
+👉 **[https://aprendelinux.dev](https://aprendelinux.dev)**
 
 ## 📸 Preview
 
-![AprendeLinux Home](docs/screenshots/home.png)
+![AprendeLinux Home](docs/screenshots/home_modo_oscuro.png)
 
-![AprendeLinux Lección](docs/screenshots/leccion.png)
+![AprendeLinux Lección](docs/screenshots/Leciones.png)
+
+![AprendeLinux comandos](docs/screenshots/comandos.png)
 
 ## 📚 Contenido
 
