@@ -4,6 +4,10 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
+# aprendelinux.dev desplegado y listo 🚀
+
+[![Website](https://img.shields.io/badge/Visitar_Web-aprendelinux.dev-00A8E8?style=for-the-badge&logo=linux&logoColor=white)](https://aprendelinux.dev)
+
 Un recuerso para aprender Linux, desde los conceptos más básicos hasta lo mas avanzados. Todo en una interfaz moderna y fluida.
 
 ## 📸 Preview
@@ -94,11 +98,12 @@ Este proyecto se encuentra desplegado utilizando una arquitectura de alto rendim
 ### 🛠️ Configuración del Servidor
 Para garantizar un despliegue ágil y escalable, segui este flujo:
 
-1.  **Aprovisionamiento en CubePath:** * Utilize la opción de **"Apps 1-Click"** de CubePath para levantar un VPS optimizado con **Dokploy**. Esto me permitió saltarnos la configuración manual del servidor 
-2.  **Gestión con Dokploy:**
+1.  **Aprovisionamiento en CubePath:**
+    * Utilize la opción de **"Apps 1-Click"** de CubePath para levantar un VPS optimizado con **Dokploy**. Esto me permitió saltarnos la configuración manual del servidor. 
+3.  **Gestión con Dokploy:**
     * Configure un panel de control autogestionado dentro del VPS.
     * Conecte este repositorio de GitHub para habilitar **CI/CD** automático.
-3.  **Build de Astro:**
+4.  **Build de Astro:**
     * Dokploy se encarga de detectar los cambios en la rama principal, ejecutar el proceso de construcción de Astro y servir los archivos estáticos (o SSR) mediante un contenedor Docker optimizado.
 
 # 📂 Estructura del Proyecto
