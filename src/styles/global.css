@@ -1,0 +1,262 @@
+@import "tailwindcss";
+
+:root {
+  /* Modo Claro */
+  --bg-primary: #FAFBFC;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F1F5F9;
+  --text-primary: #1A1A2E;
+  --text-secondary: #4A5568;
+  --text-muted: #718096;
+  --accent: #E95420;
+  --accent-hover: #D64010;
+  --success: #2ECC71;
+  --error: #E74C3C;
+  --border: #E2E8F0;
+  --border-light: #EDF2F7;
+  
+  /* Efectos modo claro */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --glow-accent: 0 0 20px rgba(233, 84, 32, 0.3);
+  
+  /* Código */
+  --code-bg: #F8FAFC;
+  --code-border: #E2E8F0;
+  
+  /* Terminal - Modo Claro */
+  --terminal-bg: #F6F8FA;
+  --terminal-header: #EAEEF2;
+  --terminal-prompt: #0969DA;
+  --terminal-command: #24292F;
+  --terminal-text: #57606A;
+}
+
+.light {
+  /* Modo Claro */
+  --bg-primary: #FAFBFC;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F1F5F9;
+  --text-primary: #1A1A2E;
+  --text-secondary: #4A5568;
+  --text-muted: #718096;
+  --accent: #E95420;
+  --accent-hover: #D64010;
+  --success: #2ECC71;
+  --error: #E74C3C;
+  --border: #E2E8F0;
+  --border-light: #EDF2F7;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --glow-accent: 0 0 20px rgba(233, 84, 32, 0.3);
+  
+  --code-bg: #F8FAFC;
+  --code-border: #E2E8F0;
+  
+  /* Terminal - Modo Claro */
+  --terminal-bg: #F6F8FA;
+  --terminal-header: #EAEEF2;
+  --terminal-prompt: #0969DA;
+  --terminal-command: #24292F;
+  --terminal-text: #57606A;
+}
+
+/* Modo Oscuro por defecto */
+html:not(.light) {
+  --bg-primary: #0D1117;
+  --bg-secondary: #161B22;
+  --bg-tertiary: #21262D;
+  --text-primary: #E6EDF3;
+  --text-secondary: #8B949E;
+  --text-muted: #6E7681;
+  --accent: #FF6B35;
+  --accent-hover: #FF8555;
+  --success: #3FB950;
+  --error: #F85149;
+  --border: #30363D;
+  --border-light: #21262D;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --glow-accent: 0 0 30px rgba(255, 107, 53, 0.4);
+  
+  --code-bg: #1C2128;
+  --code-border: #30363D;
+  
+  /* Terminal */
+  --terminal-bg: #0D1117;
+  --terminal-header: #161B22;
+  --terminal-prompt: #4EC9B0;
+  --terminal-command: #E6E6E6;
+  --terminal-text: #8B949E;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Cascadia Code', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Código */
+code, pre {
+  font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+}
+
+pre {
+  background-color: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+code {
+  background-color: var(--bg-tertiary);
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  font-size: 0.875em;
+}
+
+/* Links */
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* Botones base */
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--accent);
+  color: white;
+}
+
+/* Código de Editor (Shiki) */
+.codigo-editor {
+  position: relative;
+}
+
+.codigo-editor .codigo-content {
+  position: relative;
+}
+
+.codigo-editor .codigo-content pre {
+  margin: 0;
+  padding: 1rem;
+  background: transparent !important;
+  border: none;
+  border-radius: 0;
+}
+
+.codigo-editor .codigo-content code {
+  background: transparent;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.codigo-editor .copy-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.codigo-editor:hover .copy-btn {
+  opacity: 1;
+}
+
+/* Shiki syntax highlighting - GitHub Dark */
+.shiki {
+  background-color: transparent !important;
+}
+
+.shiki span {
+  color: inherit;
+}
+
+.shiki .line {
+  display: block;
+}
+
+.shiki .keyword {
+  color: #ff7b72;
+}
+
+.shiki .string {
+  color: #a5d6ff;
+}
+
+.shiki .comment {
+  color: #8b949e;
+  font-style: italic;
+}
+
+.shiki .function {
+  color: #d2a8ff;
+}
+
+.shiki .variable {
+  color: #ffa657;
+}
+
+.shiki .number {
+  color: #79c0ff;
+}
+
+.shiki .operator {
+  color: #ff7b72;
+}
+
+.shiki .punctuation {
+  color: #c9d1d9;
+}
+
+.shiki .property {
+  color: #79c0ff;
+}
+
+.shiki .builtin {
+  color: #ffa657;
+}

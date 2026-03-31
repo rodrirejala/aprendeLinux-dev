@@ -1,0 +1,1057 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { lecciones as leccionesData } from '../data/lecciones';
+import { comandos } from '../data/comandos';
+import { conceptos } from '../data/conceptos';
+import { createHighlighter } from 'shiki';
+
+const highlighter = await createHighlighter({
+	themes: ['github-dark'],
+	langs: ['bash', 'shell']
+});
+
+function highlightCode(code) {
+	return highlighter.codeToHtml(code, {
+		lang: 'bash',
+		theme: 'github-dark'
+	});
+}
+
+const lecciones = leccionesData.map(leccion => ({
+	...leccion,
+	secciones: leccion.secciones?.map(seccion => ({
+		...seccion,
+		codigos: seccion.codigos?.map(codigo => ({
+			...codigo,
+			html: highlightCode(codigo.codigo)
+		}))
+	}))
+}));
+
+const categoriasComandos = [...new Set(comandos.map(c => c.category))];
+---
+
+<Layout title="AprendeLinux.dev - Aprende Linux paso a paso">
+	<div class="flex h-screen">
+		<!-- Sidebar Fixed -->
+		<aside class="w-72 border-r flex flex-col fixed h-screen overflow-hidden" style="background-color: var(--bg-secondary); border-color: var(--border);">
+			<!-- Header del sidebar -->
+			<div class="p-4 border-b flex-shrink-0 pb-2" style="border-color: var(--border);">
+				<div class="flex items-center justify-between">
+					<a href="/" class="text-xl font-bold" style="color: var(--text-primary);">
+						<span style="color: var(--accent);">Aprende</span>Linux
+					</a>
+					<button id="theme-toggle" class="p-2 rounded-lg cursor-pointer transition-all duration-300 hover:scale-110" 
+						style="background-color: var(--bg-tertiary); border: 1px solid var(--border);" 
+						title="Cambiar tema">
+						<!-- Sol icon -->
+						<svg id="sun-icon" class="w-5 h-5 hidden" style="color: var(--accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+						</svg>
+						<!-- Luna icon -->
+						<svg id="moon-icon" class="w-5 h-5" style="color: var(--accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+						</svg>
+					</button>
+				</div>
+			</div>
+			
+			<!-- Tabs -->
+			<div class="p-4 flex-shrink-0" style="border-color: var(--border);">
+				<div class="flex gap-1 p-1 rounded-lg" style="background-color: var(--bg-tertiary);">
+					<button id="tab-lecciones" class="tab-btn flex-1 py-2 px-3 rounded-md text-sm font-medium cursor-pointer transition-all duration-200" 
+						style="background-color: var(--accent); color: white; border: none;">
+						Lecciones
+					</button>
+					<button id="tab-comandos" class="tab-btn flex-1 py-2 px-3 rounded-md text-sm font-medium cursor-pointer transition-all duration-200" 
+						style="background-color: transparent; color: var(--text-secondary); border: none;">
+						Comandos
+					</button>
+					<button id="tab-favoritos" class="tab-btn flex-1 py-2 px-3 rounded-md text-sm font-medium cursor-pointer transition-all duration-200" 
+						style="background-color: transparent; color: var(--text-secondary); border: none;">
+						★
+					</button>
+				</div>
+			</div>
+
+			<!-- Navegación Lecciones -->
+			<nav id="nav-lecciones" class="flex-1 overflow-y-auto px-3 pb-3 space-y-1">
+				{lecciones.map((leccion, index) => (
+					<button 
+						data-leccion-id={leccion.id}
+						data-index={index}
+						data-dificultad={leccion.dificultad || 'principiante'}
+						class="leccion-btn w-full text-left px-3 py-2.5 rounded-lg text-sm cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:px-4"
+						style="color: var(--text-secondary); background-color: transparent; border: none;"
+					>
+						<span class="truncate">{leccion.titulo.replace('Lección ' + (index + 1) + ': ', '')}</span>
+					</button>
+				))}
+			</nav>
+
+			<!-- Buscador -->
+			<div class="px-3 pb-3 hidden" id="search-container">
+				<div class="relative">
+					<svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" style="color: var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					</svg>
+					<input 
+						type="text" 
+						id="search-input"
+						placeholder="Buscar comandos..." 
+						class="w-full pl-10 pr-4 py-2 rounded-lg text-sm outline-none transition-all duration-200"
+						style="background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border);"
+					>
+				</div>
+			</div>
+
+			<!-- Navegación Comandos -->
+			<nav id="nav-comandos" class="flex-1 overflow-y-auto px-3 pb-3 space-y-1 hidden">
+				{categoriasComandos.map(cat => (
+					<div class="mb-3">
+						<h3 class="text-xs font-semibold uppercase mb-2 px-2" style="color: var(--text-muted);">{cat}</h3>
+						<ul class="space-y-0.5">
+							{comandos.filter(c => c.category === cat).map(cmd => (
+								<li>
+									<button 
+										data-command={cmd.command}
+										class="comando-btn w-full text-left px-3 py-2 rounded-lg text-sm cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:px-4"
+										style="color: var(--text-secondary); background-color: transparent; border: none;"
+									>
+										<span style="color: var(--accent); font-weight: 600;">{cmd.command}</span>
+									</button>
+								</li>
+							))}
+						</ul>
+					</div>
+				))}
+			</nav>
+
+			<!-- Navegación Favoritos -->
+			<nav id="nav-favoritos" class="flex-1 overflow-y-auto px-3 pb-3 hidden">
+				<div id="favoritos-list" class="space-y-1">
+					<p class="text-sm p-3" style="color: var(--text-muted);">Sin favoritos aún. <br>Guarda comandos desde la vista de comandos.</p>
+				</div>
+			</nav>
+		</aside>
+
+		<!-- Main Content -->
+		<main class="flex-1 ml-72 overflow-y-auto" style="background-color: var(--bg-primary);" id="main-content">
+			<!-- Home -->
+			<div class="min-h-full flex items-center justify-center p-8">
+				<div class="text-center max-w-lg">
+					<!-- Título -->
+					<h1 class="text-5xl font-bold mb-8">
+						<span style="color: var(--accent);">Aprende</span> Linux
+					</h1>
+					
+					<p class="text-xl mb-4" style="color: var(--text-primary);">
+						Domina Linux de forma progresiva
+					</p>
+					<p class="mb-8" style="color: var(--text-secondary);">
+						Selecciona una lección o comando del menú lateral para comenzar
+					</p>
+					
+					<!-- Stats -->
+					<div class="grid grid-cols-3 gap-4">
+						<div class="p-4 rounded-xl border transition-all duration-300 hover:shadow-lg cursor-pointer" 
+							style="background-color: var(--bg-secondary); border-color: var(--border); box-shadow: var(--shadow-sm);">
+							<div class="text-3xl font-bold" style="color: var(--accent);">{lecciones.length}</div>
+							<div class="text-sm" style="color: var(--text-muted);">Lecciones</div>
+						</div>
+						<div class="p-4 rounded-xl border transition-all duration-300 hover:shadow-lg cursor-pointer" 
+							style="background-color: var(--bg-secondary); border-color: var(--border); box-shadow: var(--shadow-sm);">
+							<div class="text-3xl font-bold" style="color: var(--accent);">{comandos.length}</div>
+							<div class="text-sm" style="color: var(--text-muted);">Comandos</div>
+						</div>
+						<div class="p-4 rounded-xl border transition-all duration-300 hover:shadow-lg cursor-pointer" 
+							style="background-color: var(--bg-secondary); border-color: var(--border); box-shadow: var(--shadow-sm);">
+							<div class="text-3xl font-bold" style="color: var(--accent);">{conceptos.length}</div>
+							<div class="text-sm" style="color: var(--text-muted);">Conceptos</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
+</Layout>
+
+<script define:vars={{ lecciones, comandos, conceptos }}>
+	console.log('Script loaded', { lecciones, comandos, conceptos });
+
+	// Asignar a variables
+	const leccionesData = lecciones;
+	const comandosData = comandos;
+	const conceptosData = conceptos;
+
+	// DOM Elements
+	const leccionBtns = document.querySelectorAll('.leccion-btn');
+	const comandoBtns = document.querySelectorAll('.comando-btn');
+	const mainContent = document.getElementById('main-content');
+	const navLecciones = document.getElementById('nav-lecciones');
+	const navComandos = document.getElementById('nav-comandos');
+	const tabLecciones = document.getElementById('tab-lecciones');
+	const tabComandos = document.getElementById('tab-comandos');
+	const themeToggle = document.getElementById('theme-toggle');
+	const sunIcon = document.getElementById('sun-icon');
+	const moonIcon = document.getElementById('moon-icon');
+	const searchContainer = document.getElementById('search-container');
+	const searchInput = document.getElementById('search-input');
+
+	// Theme
+	function updateThemeIcons() {
+		const isLight = document.documentElement.classList.contains('light');
+		if (sunIcon && moonIcon) {
+			sunIcon.classList.toggle('hidden', !isLight);
+			moonIcon.classList.toggle('hidden', isLight);
+		}
+	}
+	
+	updateThemeIcons();
+	
+	themeToggle?.addEventListener('click', () => {
+		const isDark = !document.documentElement.classList.contains('light');
+		document.documentElement.classList.toggle('light');
+		localStorage.setItem('theme', isDark ? 'light' : 'dark');
+		updateThemeIcons();
+	});
+
+	// Home HTML
+	const homeHtml = document.getElementById('main-content').innerHTML;
+	let currentLeccion = null;
+	let currentComando = null;
+
+	// Copy button
+	document.addEventListener('click', (e) => {
+		const btn = e.target.closest('.copy-btn');
+		if (btn) {
+			const cmd = btn.getAttribute('data-cmd');
+			navigator.clipboard.writeText(cmd).then(() => {
+				btn.innerHTML = '<svg class="w-4 h-4" style="color: var(--success);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>';
+				setTimeout(() => {
+					btn.innerHTML = '<svg class="w-4 h-4" style="color: var(--terminal-text);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>';
+				}, 1500);
+			});
+		}
+	});
+
+	// Tabs
+	const tabFavoritos = document.getElementById('tab-favoritos');
+	const navFavoritos = document.getElementById('nav-favoritos');
+	
+	function updateTabs(activeTab) {
+		const tabs = [
+			{ nav: navLecciones, btn: tabLecciones },
+			{ nav: navComandos, btn: tabComandos },
+			{ nav: navFavoritos, btn: tabFavoritos }
+		];
+		
+		tabs.forEach(t => {
+			if (t.nav) t.nav.classList.add('hidden');
+			if (t.btn) {
+				t.btn.style.backgroundColor = 'transparent';
+				t.btn.style.color = 'var(--text-secondary)';
+			}
+		});
+		
+		if (activeTab.nav) activeTab.nav.classList.remove('hidden');
+		if (activeTab.btn) {
+			activeTab.btn.style.backgroundColor = 'var(--accent)';
+			activeTab.btn.style.color = 'white';
+		}
+		
+		if (searchContainer) {
+			searchContainer.classList.toggle('hidden', activeTab.btn !== tabComandos);
+		}
+	}
+
+	tabLecciones?.addEventListener('click', () => {
+		updateTabs({ nav: navLecciones, btn: tabLecciones });
+		if (searchInput) searchInput.value = '';
+		const activeLeccionBtn = document.querySelector('.leccion-btn.active');
+		if (activeLeccionBtn) {
+			const leccionId = activeLeccionBtn.getAttribute('data-leccion-id');
+			showLeccion(leccionId);
+		} else if (currentLeccion) {
+			showLeccion(currentLeccion);
+		} else {
+			mainContent.innerHTML = homeHtml;
+		}
+	});
+
+	tabComandos?.addEventListener('click', () => {
+		updateTabs({ nav: navComandos, btn: tabComandos });
+		if (searchInput) {
+			searchInput.value = '';
+			searchInput.focus();
+		}
+		const activeComandoBtn = document.querySelector('.comando-btn.active');
+		if (activeComandoBtn) {
+			const cmdName = activeComandoBtn.getAttribute('data-command');
+			showComando(cmdName);
+		} else if (currentComando) {
+			showComando(currentComando);
+		}
+	});
+
+	tabFavoritos?.addEventListener('click', () => {
+		updateTabs({ nav: navFavoritos, btn: tabFavoritos });
+		if (searchInput) searchInput.value = '';
+		updateFavoritosList();
+	});
+
+	// Favoritos
+	function updateFavoritosList() {
+		const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+		const listEl = document.getElementById('favoritos-list');
+		if (!listEl) return;
+		
+		if (favoritos.length === 0) {
+			listEl.innerHTML = '<p class="text-sm p-3" style="color: var(--text-muted);">Sin favoritos aún.<br>Guarda comandos desde la vista de comandos.</p>';
+			return;
+		}
+		
+		listEl.innerHTML = favoritos.map(fav => `
+			<button 
+				data-command="${fav}"
+				class="comando-btn w-full text-left px-3 py-2 rounded-lg text-sm cursor-pointer transition-all duration-200 hover:scale-[1.02]"
+				style="color: var(--text-secondary); background-color: var(--bg-tertiary); border: 1px solid var(--border);"
+			>
+				<span style="color: var(--accent); font-weight: 600;">${fav}</span>
+			</button>
+		`).join('');
+		
+		listEl.querySelectorAll('.comando-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const cmdName = btn.getAttribute('data-command');
+				if (cmdName) showComando(cmdName);
+			});
+		});
+	}
+
+	function toggleFavorito(cmdName) {
+		let favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+		if (favoritos.includes(cmdName)) {
+			favoritos = favoritos.filter(f => f !== cmdName);
+		} else {
+			favoritos.push(cmdName);
+		}
+		localStorage.setItem('favoritos', JSON.stringify(favoritos));
+		return favoritos.includes(cmdName);
+	}
+
+	// Buscador de Comandos
+	searchInput?.addEventListener('input', (e) => {
+		const query = e.target.value.toLowerCase().trim();
+		
+		document.querySelectorAll('#nav-comandos .comando-btn').forEach(btn => {
+			const cmd = btn.getAttribute('data-command')?.toLowerCase() || '';
+			const parentLi = btn.closest('li');
+			
+			if (query === '' || cmd.includes(query)) {
+				if (parentLi) parentLi.style.display = '';
+			} else {
+				if (parentLi) parentLi.style.display = 'none';
+			}
+		});
+		
+		document.querySelectorAll('#nav-comandos > div').forEach(div => {
+			const hasVisibleItems = Array.from(div.querySelectorAll('li')).some(li => li.style.display !== 'none');
+			div.style.display = (query === '' || hasVisibleItems) ? '' : 'none';
+		});
+	});
+
+	// Ocultar buscador cuando está en lecciones
+	tabLecciones?.addEventListener('click', () => {
+		if (searchContainer) searchContainer.classList.add('hidden');
+		if (searchInput) searchInput.value = '';
+	});
+
+	// Helpers
+	function getComando(cmdName) {
+		return comandosData.find(c => c.command === cmdName);
+	}
+
+	function getConcepto(conceptId) {
+		return conceptosData.find(c => c.id === conceptId);
+	}
+
+	function getLeccionIndex(leccionId) {
+		return leccionesData.findIndex(l => l.id === leccionId);
+	}
+
+	function formatContent(text) {
+		let formatted = text;
+		
+		// Código en backticks
+		formatted = formatted.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded text-sm font-mono" style="background-color: var(--code-bg); color: var(--accent); border: 1px solid var(--code-border);">$1</code>');
+		
+		// Negritas
+		formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong style="color: var(--text-primary); font-weight: 600;">$1</strong>');
+		
+		// Listas numeradas
+		formatted = formatted.replace(/^(\d+\.)\s+(.+)$/gm, '<li class="ml-4" style="color: var(--text-primary);"><span style="color: var(--accent);">$1</span> $2</li>');
+		
+		// Viñetas
+		formatted = formatted.replace(/^[-•]\s+(.+)$/gm, '<li class="ml-4" style="color: var(--text-primary);"><span style="color: var(--accent);">•</span> $1</li>');
+		
+		return formatted;
+	}
+
+	function formatSectionContent(contenido) {
+		return contenido.map(texto => {
+			let formatted = formatContent(texto);
+			return `<p class="leading-relaxed" style="color: var(--text-primary);">${formatted}</p>`;
+		}).join('');
+	}
+
+	// Mostrar Lección
+	function showLeccion(leccionId) {
+		const leccion = leccionesData.find(l => l.id === leccionId);
+		const leccionIndex = getLeccionIndex(leccionId);
+		
+		if (!leccion || !mainContent) return;
+
+		// Secciones
+		let seccionesHtml = '';
+		if (leccion.secciones && leccion.secciones.length > 0) {
+			const secciones = leccion.secciones.map(seccion => {
+				let tablaHtml = '';
+				if (seccion.tabla && seccion.tabla.length > 0) {
+					tablaHtml = `
+						<div class="overflow-x-auto mt-6">
+							<table class="w-full text-left rounded-lg overflow-hidden" style="background-color: var(--bg-secondary); border: 1px solid var(--border);">
+								<thead>
+									<tr style="background-color: var(--bg-tertiary);">
+										<th class="py-3 px-4 font-semibold text-sm" style="color: var(--accent);">Comando</th>
+										<th class="py-3 px-4 font-semibold text-sm" style="color: var(--accent);">Descripción</th>
+									</tr>
+								</thead>
+								<tbody>
+									${seccion.tabla.map((fila, i) => `
+										<tr style="${i % 2 === 0 ? 'background-color: var(--bg-secondary);' : 'background-color: var(--bg-primary);'}">
+											<td class="py-3 px-4 font-mono font-medium" style="color: var(--accent);">${fila.etiqueta}</td>
+											<td class="py-3 px-4" style="color: var(--text-secondary);">${fila.descripcion}</td>
+										</tr>
+									`).join('')}
+								</tbody>
+							</table>
+						</div>
+					`;
+				}
+
+				let codigosHtml = '';
+				if (seccion.codigos && seccion.codigos.length > 0) {
+					codigosHtml = seccion.codigos.map(codigo => `
+						<div class="codigo-editor rounded-lg overflow-hidden mt-4" style="background-color: #0d1117; border: 1px solid #30363d;">
+							<div class="flex items-center justify-between px-3 py-2" style="background-color: #161b22; border-bottom: 1px solid #30363d;">
+								<div class="flex items-center gap-2">
+									<span class="w-3 h-3 rounded-full" style="background-color: #ff5f56;"></span>
+									<span class="w-3 h-3 rounded-full" style="background-color: #ffbd2e;"></span>
+									<span class="w-3 h-3 rounded-full" style="background-color: #27c93f;"></span>
+									<span class="ml-2 text-xs" style="color: #8b949e;">${codigo.titulo || 'script.sh'}</span>
+								</div>
+								<button class="copy-btn opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded" data-cmd="${codigo.codigo.replace(/"/g, '&quot;')}" title="Copiar">
+									<svg class="w-4 h-4" style="color: #8b949e;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+									</svg>
+								</button>
+							</div>
+							<div class="codigo-content p-4 overflow-x-auto">
+								${codigo.html || ''}
+							</div>
+						</div>
+					`).join('');
+				}
+				
+				return `
+					<section class="mb-8">
+						<h2 class="text-xl font-bold mb-4" style="color: var(--text-primary);">
+							${seccion.titulo}
+						</h2>
+						<div class="space-y-3">
+							${formatSectionContent(seccion.contenido)}
+						</div>
+						${tablaHtml}
+						${codigosHtml}
+					</section>
+				`;
+			}).join('');
+			
+			seccionesHtml = `<div class="mb-8">${secciones}</div>`;
+		}
+
+		// Comandos de la lección
+		let commandsHtml = '';
+		if (leccion.comandos && leccion.comandos.length > 0) {
+			const leccionComandos = leccion.comandos.map(cmdName => {
+				const cmd = getComando(cmdName);
+				if (!cmd) return '';
+				const firstUso = cmd.usos[0];
+				const otherUsos = cmd.usos.slice(1);
+				return `
+					<div class="mb-6">
+						<h3 class="text-xl font-bold mb-2" style="color: var(--accent);">${cmd.command}</h3>
+						<p class="mb-4" style="color: var(--text-secondary);">${cmd.description}</p>
+						
+						${firstUso ? `
+						<div class="rounded-lg overflow-hidden mb-4 relative group" style="background-color: var(--terminal-bg); border: 1px solid var(--border);">
+							<div class="flex items-center justify-between px-3 py-2" style="background-color: var(--terminal-header); border-bottom: 1px solid var(--border);">
+								<div class="flex items-center gap-2">
+									<span class="w-3 h-3 rounded-full" style="background-color: #FF5F56;"></span>
+									<span class="w-3 h-3 rounded-full" style="background-color: #FFBD2E;"></span>
+									<span class="w-3 h-3 rounded-full" style="background-color: #27C93F;"></span>
+									<span class="ml-2 text-xs" style="color: var(--terminal-text);">Terminal</span>
+								</div>
+								<button class="copy-btn opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded" data-cmd="${firstUso.comando}" title="Copiar">
+									<svg class="w-4 h-4" style="color: var(--terminal-text);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+									</svg>
+								</button>
+							</div>
+							<div class="p-4">
+								<code class="font-mono text-base font-medium block mb-2" style="color: var(--terminal-command);"><span style="color: var(--terminal-prompt);">usuario@linux-pc:~$</span> ${firstUso.comando}</code>
+								${firstUso.salida ? `
+								<pre class="font-mono text-sm mt-2 p-3 rounded" style="background-color: var(--terminal-bg); color: var(--terminal-text); border: 1px solid var(--border); overflow-x: auto;">${firstUso.salida}</pre>
+								` : `
+								<span style="color: var(--terminal-text); font-size: 0.875rem;">${firstUso.descripcion}</span>
+								`}
+							</div>
+						</div>
+						` : ''}
+						
+						${otherUsos.length > 0 ? `
+						<div class="overflow-x-auto">
+							<table class="w-full text-left rounded-lg overflow-hidden" style="background-color: var(--bg-secondary); border: 1px solid var(--border);">
+								<thead>
+									<tr style="background-color: var(--bg-tertiary);">
+										<th class="py-2 px-4 font-semibold text-sm" style="color: var(--accent);">Comando</th>
+										<th class="py-2 px-4 font-semibold text-sm" style="color: var(--accent);">Descripción</th>
+									</tr>
+								</thead>
+								<tbody>
+									${otherUsos.map(uso => `
+										<tr style="${otherUsos.indexOf(uso) % 2 === 0 ? 'background-color: var(--bg-secondary);' : 'background-color: var(--bg-primary);'}">
+											<td class="py-2 px-4 font-mono font-medium" style="color: var(--text-primary);">${uso.comando}</td>
+											<td class="py-2 px-4" style="color: var(--text-secondary);">${uso.descripcion}</td>
+										</tr>
+									`).join('')}
+								</tbody>
+							</table>
+						</div>
+						` : ''}
+					</div>
+				`;
+			}).join('');
+
+			commandsHtml = `
+				<div class="mt-8 pt-6 border-t" style="border-color: var(--border);">
+					<h2 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Comandos</h2>
+					${leccionComandos}
+				</div>
+			`;
+		}
+
+		// Conceptos
+		let conceptosHtml = '';
+		if (leccion.conceptos && leccion.conceptos.length > 0) {
+			const leccionConceptos = leccion.conceptos.map(conceptId => {
+				const concepto = getConcepto(conceptId);
+				if (!concepto) return '';
+				return `
+					<div class="mb-6 p-5 rounded-xl border" style="background-color: var(--bg-secondary); border-color: var(--border);">
+						<h3 class="text-xl font-bold mb-2" style="color: var(--accent);">${concepto.titulo}</h3>
+						<p class="mb-4" style="color: var(--text-secondary);">${concepto.descripcion}</p>
+						
+						${concepto.contenido ? `
+							<div class="space-y-2 mb-4" style="color: var(--text-muted);">
+								${concepto.contenido.map(texto => `<p>${texto}</p>`).join('')}
+							</div>
+						` : ''}
+						
+						${concepto.codigos ? `
+							<div class="space-y-3 pt-4 border-t" style="border-color: var(--border);">
+								${concepto.codigos.map(codigo => `
+									<div class="rounded-lg overflow-hidden" style="background-color: var(--terminal-bg); border: 1px solid var(--border);">
+										<div class="flex items-center gap-2 px-3 py-2" style="background-color: var(--terminal-header); border-bottom: 1px solid var(--border);">
+											<span class="w-3 h-3 rounded-full" style="background-color: #FF5F56;"></span>
+											<span class="w-3 h-3 rounded-full" style="background-color: #FFBD2E;"></span>
+											<span class="w-3 h-3 rounded-full" style="background-color: #27C93F;"></span>
+											<span class="ml-2 text-xs" style="color: var(--terminal-text);">Terminal</span>
+										</div>
+										<div class="p-4">
+											<code class="font-mono text-base font-medium block mb-1" style="color: var(--terminal-command);"><span style="color: var(--terminal-prompt);">usuario@linux-pc:~$</span> ${codigo.codigo}</code>
+											${codigo.titulo ? `<span style="color: var(--terminal-text); font-size: 0.875rem;">${codigo.titulo}</span>` : ''}
+										</div>
+									</div>
+								`).join('')}
+							</div>
+						` : ''}
+					</div>
+				`;
+			}).join('');
+
+			conceptosHtml = `
+				<div class="mt-8 pt-6 border-t" style="border-color: var(--border);">
+					<h2 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Conceptos</h2>
+					${leccionConceptos}
+				</div>
+			`;
+		}
+
+		// Ejercicios
+		let ejerciciosHtml = '';
+		if (leccion.ejercicios && leccion.ejercicios.length > 0) {
+			const ejercicios = leccion.ejercicios.map((ej, idx) => `
+				<div class="ejercicio-item mb-4 p-4 rounded-lg border" style="background-color: var(--bg-secondary); border-color: var(--border);">
+					<p class="font-medium mb-3" style="color: var(--text-primary);">${idx + 1}. ${ej.pregunta}</p>
+					<div class="flex gap-2">
+						<input 
+							type="text" 
+							class="ejercicio-input flex-1 px-3 py-2 rounded-lg text-sm outline-none"
+							style="background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border);"
+							placeholder="Escribe el comando..."
+							data-respuesta="${ej.respuestaEsperada}"
+							data-solucion="${ej.solucion || ''}"
+						>
+						<button class="check-ejercicio px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-all"
+							style="background-color: var(--accent); color: white; border: none;">
+							Verificar
+						</button>
+					</div>
+					<p class="ejercicio-feedback mt-2 text-sm hidden"></p>
+				</div>
+			`).join('');
+			
+			ejerciciosHtml = `
+				<div class="mt-8 pt-6 border-t" style="border-color: var(--border);">
+					<h2 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Ejercicios Prácticos</h2>
+					<p class="mb-4 text-sm" style="color: var(--text-secondary);">Escribe el comando correcto y verifica tu respuesta.</p>
+					${ejercicios}
+				</div>
+			`;
+		}
+
+		// Botones navegación
+		const prevLeccion = leccionesData[leccionIndex - 1];
+		const sigLeccion = leccionesData[leccionIndex + 1];
+		
+		let navButtonsHtml = `
+			<div class="mt-10 pt-6 border-t flex justify-between" style="border-color: var(--border);">
+				${prevLeccion ? `
+					<button 
+						data-leccion-id="${prevLeccion.id}"
+						class="nav-btn font-semibold py-3 px-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105"
+						style="background-color: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border);"
+					>
+						← Anterior
+					</button>
+				` : '<div></div>'}
+				${sigLeccion ? `
+					<button 
+						data-leccion-id="${sigLeccion.id}"
+						class="nav-btn font-semibold py-3 px-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105"
+						style="background-color: var(--accent); color: white; border: none;"
+					>
+						Siguiente: ${sigLeccion.titulo.replace('Lección ' + (leccionIndex + 2) + ': ', '')} →
+					</button>
+				` : ''}
+			</div>
+		`;
+
+		// Render
+		mainContent.innerHTML = `
+			<div class="max-w-4xl mx-auto pb-20 px-8 py-8">
+				<button id="back-home" class="mb-6 cursor-pointer transition-colors hover:underline" 
+					style="color: var(--accent); background: none; border: none;">
+					← Volver al inicio
+				</button>
+				
+				<header class="mb-8 pb-6 border-b" style="border-color: var(--border);">
+					<h1 class="text-4xl font-bold mb-3" style="color: var(--text-primary);">
+						${leccion.titulo}
+					</h1>
+					<p class="text-lg" style="color: var(--text-secondary);">${leccion.descripcion}</p>
+				</header>
+				
+				${leccion.contenido ? `
+					<div class="mb-8">
+						${leccion.contenido.map(texto => `<p class="mb-3 leading-relaxed" style="color: var(--text-primary);">${formatContent(texto)}</p>`).join('')}
+					</div>
+				` : ''}
+
+				${seccionesHtml}
+				${commandsHtml}
+				${conceptosHtml}
+				${ejerciciosHtml}
+				${navButtonsHtml}
+			</div>
+		`;
+
+		mainContent.scrollTo(0, 0);
+
+		document.getElementById('back-home')?.addEventListener('click', () => {
+			location.reload();
+		});
+
+		// Botones navegación
+		document.querySelectorAll('.nav-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const leccionId = btn.getAttribute('data-leccion-id');
+				if (leccionId) {
+					showLeccion(leccionId);
+				}
+			});
+		});
+
+		// Ejercicios interactivos
+		document.querySelectorAll('.check-ejercicio').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const container = btn.closest('.ejercicio-item');
+				const input = container?.querySelector('.ejercicio-input');
+				const feedback = container?.querySelector('.ejercicio-feedback');
+				if (!input || !feedback) return;
+				
+				const respuesta = input.value.trim().toLowerCase();
+				const respuestaEsperada = input.getAttribute('data-respuesta')?.toLowerCase() || '';
+				const solucion = input.getAttribute('data-solucion') || '';
+				
+				feedback.classList.remove('hidden');
+				if (respuesta === respuestaEsperada) {
+					feedback.innerHTML = '<span style="color: var(--success);">✓ ¡Correcto!</span>';
+					input.style.borderColor = 'var(--success)';
+				} else {
+					feedback.innerHTML = `<span style="color: var(--error);">✗ Inténtalo de nuevo.</span> ${solucion ? '<br><span style="color: var(--text-muted);">' + solucion + '</span>' : ''}`;
+					input.style.borderColor = 'var(--error)';
+				}
+			});
+		});
+
+		// Enter para verificar
+		document.querySelectorAll('.ejercicio-input').forEach(input => {
+			input.addEventListener('keypress', (e) => {
+				if (e.key === 'Enter') {
+					const container = input.closest('.ejercicio-item');
+					const btn = container?.querySelector('.check-ejercicio');
+					btn?.click();
+				}
+			});
+		});
+		
+		currentLeccion = leccionId;
+	}
+
+	// Mostrar Comando
+	function showComando(cmdName) {
+		const cmd = getComando(cmdName);
+		const cmdIndex = comandosData.findIndex(c => c.command === cmdName);
+		const nextComando = cmdIndex < comandosData.length - 1 ? comandosData[cmdIndex + 1] : null;
+		if (!cmd || !mainContent) return;
+
+		const firstUso = cmd.usos[0];
+		const otherUsos = cmd.usos.slice(1);
+		
+		mainContent.innerHTML = `
+			<div class="max-w-4xl mx-auto pb-20 px-8 py-8">
+				<button id="back-home" class="mb-6 cursor-pointer transition-colors hover:underline" 
+					style="color: var(--accent); background: none; border: none;">
+					← Volver al inicio
+				</button>
+				
+				<div>
+					<div class="flex items-center justify-between mb-4">
+						<h1 class="text-4xl font-bold" style="color: var(--accent);">
+							${cmd.command}
+						</h1>
+						<button id="fav-btn" class="fav-btn p-2 rounded-lg cursor-pointer transition-all hover:scale-110" 
+							style="background-color: var(--bg-tertiary); border: 1px solid var(--border);" 
+							title="Añadir a favoritos">
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+							</svg>
+						</button>
+					</div>
+					<p class="text-lg mb-8" style="color: var(--text-secondary);">${cmd.description}</p>
+					
+					${firstUso ? `
+					<div class="rounded-lg overflow-hidden mb-6 relative group" style="background-color: var(--terminal-bg); border: 1px solid var(--border);">
+						<div class="flex items-center justify-between px-3 py-2" style="background-color: var(--terminal-header); border-bottom: 1px solid var(--border);">
+							<div class="flex items-center gap-2">
+								<span class="w-3 h-3 rounded-full" style="background-color: #FF5F56;"></span>
+								<span class="w-3 h-3 rounded-full" style="background-color: #FFBD2E;"></span>
+								<span class="w-3 h-3 rounded-full" style="background-color: #27C93F;"></span>
+								<span class="ml-2 text-xs" style="color: var(--terminal-text);">Terminal</span>
+							</div>
+							<button class="copy-btn opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded" data-cmd="${firstUso.comando}" title="Copiar">
+								<svg class="w-4 h-4" style="color: var(--terminal-text);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+								</svg>
+							</button>
+						</div>
+						<div class="p-4">
+							<code class="font-mono text-lg font-medium block mb-2" style="color: var(--terminal-command);"><span style="color: var(--terminal-prompt);">usuario@linux-pc:~$</span> ${firstUso.comando}</code>
+							${firstUso.salida ? `
+							<pre class="font-mono text-sm mt-2 p-3 rounded" style="background-color: var(--terminal-bg); color: var(--terminal-text); border: 1px solid var(--border); overflow-x: auto;">${firstUso.salida}</pre>
+							` : `
+							<span style="color: var(--terminal-text);">${firstUso.descripcion}</span>
+							`}
+						</div>
+					</div>
+					` : ''}
+					
+					${otherUsos.length > 0 ? `
+					<h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">Opciones</h2>
+					<div class="overflow-x-auto mb-6">
+						<table class="w-full text-left rounded-lg overflow-hidden" style="background-color: var(--bg-secondary); border: 1px solid var(--border);">
+							<thead>
+								<tr style="background-color: var(--bg-tertiary);">
+									<th class="py-2 px-4 font-semibold text-sm" style="color: var(--accent);">Comando</th>
+									<th class="py-2 px-4 font-semibold text-sm" style="color: var(--accent);">Descripción</th>
+								</tr>
+							</thead>
+							<tbody>
+								${otherUsos.map((uso, i) => `
+									<tr style="${i % 2 === 0 ? 'background-color: var(--bg-secondary);' : 'background-color: var(--bg-primary);'}">
+										<td class="py-2 px-4 font-mono font-medium" style="color: var(--text-primary);">${uso.comando}</td>
+										<td class="py-2 px-4" style="color: var(--text-secondary);">${uso.descripcion}</td>
+									</tr>
+								`).join('')}
+							</tbody>
+						</table>
+					</div>
+					` : ''}
+					
+					${cmd.trucos && cmd.trucos.length > 0 ? `
+					<h2 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">Trucos</h2>
+					<div class="space-y-3">
+						${cmd.trucos.map(truco => `
+							<div class="p-4 rounded-lg" style="background-color: var(--bg-secondary); border: 1px solid var(--border);">
+								<h3 class="font-semibold mb-2" style="color: var(--accent);">${truco.titulo}</h3>
+								<p style="color: var(--text-secondary);">${truco.descripcion}</p>
+							</div>
+						`).join('')}
+					</div>
+					` : ''}
+					
+					${nextComando ? `
+					<div class="mt-8">
+						<button 
+							data-comando="${nextComando.command}"
+							class="next-comando-btn font-semibold py-3 px-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105"
+							style="background-color: var(--accent); color: white; border: none; width: 100%;"
+						>
+							Siguiente: ${nextComando.command} →
+						</button>
+					</div>
+					` : ''}
+				</div>
+			</div>
+		`;
+
+		mainContent.scrollTo(0, 0);
+
+		document.getElementById('back-home')?.addEventListener('click', () => {
+			location.reload();
+		});
+
+		// Botón favorito
+		const favBtn = document.getElementById('fav-btn');
+		if (favBtn) {
+			const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+			const isFav = favoritos.includes(cmdName);
+			updateFavIcon(favBtn, isFav);
+			
+			favBtn.addEventListener('click', () => {
+				const nowFav = toggleFavorito(cmdName);
+				updateFavIcon(favBtn, nowFav);
+			});
+		}
+
+		function updateFavIcon(btn, isFav) {
+			const svg = btn.querySelector('svg');
+			if (isFav) {
+				svg.setAttribute('fill', 'currentColor');
+				svg.style.color = '#FBBF24';
+			} else {
+				svg.setAttribute('fill', 'none');
+				svg.style.color = 'var(--text-secondary)';
+			}
+		}
+
+		document.querySelectorAll('.next-comando-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				navigateComando('next');
+			});
+		});
+	}
+
+	// Event Listeners
+	leccionBtns.forEach(btn => {
+		btn.addEventListener('mouseenter', () => {
+			if (!btn.classList.contains('active')) {
+				btn.style.backgroundColor = 'var(--bg-tertiary)';
+			}
+		});
+		btn.addEventListener('mouseleave', () => {
+			if (!btn.classList.contains('active')) {
+				btn.style.backgroundColor = 'transparent';
+			}
+		});
+		btn.addEventListener('click', () => {
+			leccionBtns.forEach(b => {
+				b.style.backgroundColor = 'transparent';
+				b.style.color = 'var(--text-secondary)';
+				b.classList.remove('active');
+			});
+			btn.style.backgroundColor = 'var(--bg-tertiary)';
+			btn.style.color = 'var(--text-primary)';
+			btn.classList.add('active');
+
+			const leccionId = btn.getAttribute('data-leccion-id');
+			showLeccion(leccionId);
+			currentLeccion = leccionId;
+			currentComando = null;
+		});
+	});
+
+	comandoBtns.forEach(btn => {
+		btn.addEventListener('mouseenter', () => {
+			if (!btn.classList.contains('active')) {
+				btn.style.backgroundColor = 'var(--bg-tertiary)';
+			}
+		});
+		btn.addEventListener('mouseleave', () => {
+			if (!btn.classList.contains('active')) {
+				btn.style.backgroundColor = 'transparent';
+			}
+		});
+		btn.addEventListener('click', () => {
+			comandoBtns.forEach(b => {
+				b.style.backgroundColor = 'transparent';
+				b.classList.remove('active');
+			});
+			btn.style.backgroundColor = 'var(--bg-tertiary)';
+			btn.classList.add('active');
+
+			const cmdName = btn.getAttribute('data-command');
+			showComando(cmdName);
+			currentComando = cmdName;
+			currentLeccion = null;
+		});
+	});
+
+	
+	function navigateComando(direction) {
+		const visibleBtns = Array.from(comandoBtns).filter(b => !b.closest('.hidden'));
+		if (visibleBtns.length === 0) return;
+		
+		let currentIndex = -1;
+		const activeBtn = document.querySelector('.comando-btn.active');
+		
+		if (activeBtn) {
+			currentIndex = visibleBtns.indexOf(activeBtn);
+		}
+		
+		let newIndex;
+		if (direction === 'next') {
+			if (currentIndex === -1 || currentIndex === visibleBtns.length - 1) {
+				newIndex = 0;
+			} else {
+				newIndex = currentIndex + 1;
+			}
+		} else {
+			if (currentIndex === -1 || currentIndex === 0) {
+				newIndex = visibleBtns.length - 1;
+			} else {
+				newIndex = currentIndex - 1;
+			}
+		}
+		
+		visibleBtns.forEach(b => {
+			b.style.backgroundColor = 'transparent';
+			b.classList.remove('active');
+		});
+		
+		const nextBtn = visibleBtns[newIndex];
+		nextBtn.style.backgroundColor = 'var(--bg-tertiary)';
+		nextBtn.classList.add('active');
+		showComando(nextBtn.getAttribute('data-command'));
+		currentComando = nextBtn.getAttribute('data-command');
+		currentLeccion = null;
+	}
+	
+	function navigateLeccion(direction) {
+		const visibleBtns = Array.from(leccionBtns).filter(b => !b.closest('.hidden'));
+		if (visibleBtns.length === 0) return;
+		
+		let currentIndex = -1;
+		const activeBtn = document.querySelector('.leccion-btn.active');
+		
+		if (activeBtn) {
+			currentIndex = visibleBtns.indexOf(activeBtn);
+		}
+		
+		let newIndex;
+		if (direction === 'next') {
+			if (currentIndex === -1 || currentIndex === visibleBtns.length - 1) {
+				newIndex = 0;
+			} else {
+				newIndex = currentIndex + 1;
+			}
+		} else {
+			if (currentIndex === -1 || currentIndex === 0) {
+				newIndex = visibleBtns.length - 1;
+			} else {
+				newIndex = currentIndex - 1;
+			}
+		}
+		
+		visibleBtns.forEach(b => {
+			b.style.backgroundColor = 'transparent';
+			b.style.color = 'var(--text-secondary)';
+			b.classList.remove('active');
+		});
+		
+		const nextBtn = visibleBtns[newIndex];
+		nextBtn.style.backgroundColor = 'var(--bg-tertiary)';
+		nextBtn.style.color = 'var(--text-primary)';
+		nextBtn.classList.add('active');
+		showLeccion(nextBtn.getAttribute('data-leccion-id'));
+		currentLeccion = nextBtn.getAttribute('data-leccion-id');
+		currentComando = null;
+	}
+	
+	document.addEventListener('keydown', (e) => {
+		if (currentLeccion) {
+			if (e.key === 'ArrowRight') {
+				navigateLeccion('next');
+			} else if (e.key === 'ArrowLeft') {
+				navigateLeccion('prev');
+			}
+		} else if (currentComando) {
+			if (e.key === 'ArrowRight') {
+				navigateComando('next');
+			} else if (e.key === 'ArrowLeft') {
+				navigateComando('prev');
+			}
+		} else {
+			const activeLeccionBtn = document.querySelector('.leccion-btn.active');
+			const activeComandoBtn = document.querySelector('.comando-btn.active');
+			if (activeLeccionBtn) {
+				currentLeccion = activeLeccionBtn.getAttribute('data-leccion-id');
+				if (e.key === 'ArrowRight') {
+					navigateLeccion('next');
+				} else if (e.key === 'ArrowLeft') {
+					navigateLeccion('prev');
+				}
+			} else if (activeComandoBtn) {
+				currentComando = activeComandoBtn.getAttribute('data-command');
+				if (e.key === 'ArrowRight') {
+					navigateComando('next');
+				} else if (e.key === 'ArrowLeft') {
+					navigateComando('prev');
+				}
+			}
+		}
+	});
+</script>
