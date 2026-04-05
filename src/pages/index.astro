@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { lecciones as leccionesData } from '../data/lecciones';
 import { comandos } from '../data/comandos';
 import { conceptos } from '../data/conceptos';
+import { quizQuestions } from '../data/quiz';
 import { createHighlighter } from 'shiki';
 
 const highlighter = await createHighlighter({
@@ -58,7 +59,7 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 			
 			<!-- Tabs -->
 			<div class="p-4 flex-shrink-0" style="border-color: var(--border);">
-				<div class="flex gap-3 p-1 rounded-lg" style="background-color: var(--bg-tertiary);">
+				<div class="flex gap-1 p-1 rounded-lg" style="background-color: var(--bg-tertiary);">
 					<button id="tab-lecciones" class="tab-btn flex-1 py-2 px-3 rounded-md text-sm font-medium cursor-pointer transition-all duration-200" 
 						style="background-color: var(--accent); color: white; border: none;">
 						Lecciones
@@ -67,8 +68,8 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 						style="background-color: transparent; color: var(--text-secondary); border: none;">
 						Comandos
 					</button>
-					<button id="tab-favoritos" class="tab-btn py-2 px-4 rounded-md text-lg cursor-pointer transition-all duration-200" 
-						style="background-color: transparent; color: var(--text-secondary); border: none; min-width: 44px;"
+					<button id="tab-favoritos" class="tab-btn py-2 px-2 rounded-md text-lg cursor-pointer transition-all duration-200" 
+						style="background-color: transparent; color: var(--text-secondary); border: none; min-width: 40px;"
 						title="Favoritos">
 						<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
 							<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -154,34 +155,27 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 			<div class="min-h-full flex items-center justify-center p-8">
 				<div class="text-center max-w-lg">
 					<!-- Título -->
-					<h1 class="text-5xl font-bold mb-8">
+					<h1 class="text-5xl font-bold mb-4">
 						<span style="color: var(--accent);">Aprende</span><span style="color: var(--text-primary);">Linux</span>
 					</h1>
 					
-					<p class="text-xl mb-4" style="color: var(--text-primary);">
-						Domina la Terminal de Linux!
-					</p>
-					<p class="mb-8" style="color: var(--text-secondary);">
-						Selecciona una lección o comando del menú lateral para comenzar
+					<p class="text-lg mb-2" style="color: var(--text-muted);">
+						{lecciones.length} lecciones · {comandos.length} comandos · {conceptos.length} conceptos
 					</p>
 					
-					<!-- Stats -->
-					<div class="grid grid-cols-3 gap-4">
-						<div class="p-4 rounded-xl border transition-all duration-300 hover:shadow-lg cursor-pointer" 
-							style="background-color: var(--bg-secondary); border-color: var(--border); box-shadow: var(--shadow-sm);">
-							<div class="text-3xl font-bold" style="color: var(--accent);">{lecciones.length}</div>
-							<div class="text-sm" style="color: var(--text-muted);">Lecciones</div>
-						</div>
-						<div class="p-4 rounded-xl border transition-all duration-300 hover:shadow-lg cursor-pointer" 
-							style="background-color: var(--bg-secondary); border-color: var(--border); box-shadow: var(--shadow-sm);">
-							<div class="text-3xl font-bold" style="color: var(--accent);">{comandos.length}</div>
-							<div class="text-sm" style="color: var(--text-muted);">Comandos</div>
-						</div>
-						<div class="p-4 rounded-xl border transition-all duration-300 hover:shadow-lg cursor-pointer" 
-							style="background-color: var(--bg-secondary); border-color: var(--border); box-shadow: var(--shadow-sm);">
-							<div class="text-3xl font-bold" style="color: var(--accent);">{conceptos.length}</div>
-							<div class="text-sm" style="color: var(--text-muted);">Conceptos</div>
-						</div>
+					<p class="text-xl mb-6" style="color: var(--text-primary);">
+						Domina la Terminal de Linux!
+					</p>					
+					<!-- Botones de inicio -->
+					<div class="flex gap-4 justify-center">
+						<button id="start-lesson-btn" class="px-6 py-3 rounded-xl font-semibold cursor-pointer transition-all duration-300 hover:scale-105"
+							style="background-color: var(--accent); color: white; border: none;">
+							Comenzar primera lección
+						</button>
+						<button id="start-quiz-btn" class="px-6 py-3 rounded-xl font-semibold cursor-pointer transition-all duration-300 hover:scale-105"
+							style="background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border);">
+							Acceder al Quiz
+						</button>
 					</div>
 				</div>
 			</div>
@@ -189,13 +183,14 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 	</div>
 </Layout>
 
-<script define:vars={{ lecciones, comandos, conceptos }}>
-	console.log('Script loaded', { lecciones, comandos, conceptos });
+<script define:vars={{ lecciones, comandos, conceptos, quizQuestions }}>
+	console.log('Script loaded', { lecciones, comandos, conceptos, quizQuestions });
 
 	// Asignar a variables
 	const leccionesData = lecciones;
 	const comandosData = comandos;
 	const conceptosData = conceptos;
+	const quizQuestionsData = quizQuestions;
 
 	// DOM Elements
 	const leccionBtns = document.querySelectorAll('.leccion-btn');
@@ -311,6 +306,301 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 		updateTabs({ nav: navFavoritos, btn: tabFavoritos });
 		if (searchInput) searchInput.value = '';
 		updateFavoritosList();
+	});
+
+	// Quiz
+
+	let quizState = {
+		preguntas: [],
+		preguntaActual: 0,
+		respuestas: [],
+		iniciado: false
+	};
+
+	function showQuizSelector() {
+		if (!mainContent) return;
+		
+		mainContent.innerHTML = `
+			<div class="max-w-md mx-auto pb-20 px-8 py-8">
+				<h2 class="text-3xl font-bold mb-6 text-center" style="color: var(--text-primary);">Quiz de Linux</h2>
+				<p class="mb-6 text-center" style="color: var(--text-secondary);">Pon a prueba tus conocimientos con preguntas sobre la terminal de Linux.</p>
+				
+				<div class="p-6 rounded-xl" style="background-color: var(--bg-secondary); border: 1px solid var(--border);">
+					<label class="block text-sm font-medium mb-3" style="color: var(--text-secondary);">Número de preguntas:</label>
+					<select id="quiz-count" class="w-full px-4 py-3 rounded-lg text-base outline-none mb-4"
+						style="background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border);">
+						<option value="5">5 preguntas</option>
+						<option value="10" selected>10 preguntas</option>
+						<option value="15">15 preguntas</option>
+						<option value="20">20 preguntas</option>
+						<option value="30">Todas (30 preguntas)</option>
+					</select>
+					
+					<button id="start-quiz-confirm" class="w-full py-3 px-4 rounded-lg font-semibold cursor-pointer transition-all duration-300 hover:scale-[1.02]"
+						style="background-color: var(--accent); color: white; border: none;">
+						Comenzar Quiz
+					</button>
+				</div>
+				
+				<div class="mt-6 text-center">
+					<button id="back-home-from-quiz" class="text-sm cursor-pointer transition-colors hover:underline" 
+						style="color: var(--text-muted); background: none; border: none;">
+						← Volver al inicio
+					</button>
+				</div>
+			</div>
+		`;
+		
+		mainContent.scrollTo(0, 0);
+		
+		document.getElementById('start-quiz-confirm')?.addEventListener('click', () => {
+			const count = parseInt(document.getElementById('quiz-count')?.value || '10');
+			startQuiz(count);
+		});
+		
+		document.getElementById('back-home-from-quiz')?.addEventListener('click', () => {
+			mainContent.innerHTML = homeHtml;
+		});
+	}
+
+	function shuffleArray(array) {
+		const shuffled = [...array];
+		for (let i = shuffled.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+		}
+		return shuffled;
+	}
+
+	function startQuiz(count) {
+		const allQuestions = quizQuestionsData;
+		const shuffled = shuffleArray(allQuestions);
+		quizState = {
+			preguntas: shuffled.slice(0, count),
+			preguntaActual: 0,
+			respuestas: [],
+			iniciado: true
+		};
+		showQuizQuestion();
+	}
+
+	function showQuizQuestion() {
+		if (!quizState.iniciado || !mainContent) return;
+		
+		const pregunta = quizState.preguntas[quizState.preguntaActual];
+		const total = quizState.preguntas.length;
+		const progreso = quizState.preguntaActual + 1;
+		
+		mainContent.innerHTML = `
+			<div class="max-w-2xl mx-auto pb-20 px-8 py-8">
+				<button id="back-to-quiz-menu" class="mb-6 cursor-pointer transition-colors hover:underline" 
+					style="color: var(--accent); background: none; border: none;">
+					← Volver al menú de quiz
+				</button>
+				
+				<div class="mb-6">
+					<div class="flex items-center justify-between mb-2">
+						<span class="text-sm font-medium" style="color: var(--text-muted);">Pregunta ${progreso} de ${total}</span>
+						<span class="text-sm" style="color: var(--text-muted);">${pregunta.categoria}</span>
+					</div>
+					<div class="h-2 rounded-full overflow-hidden" style="background-color: var(--bg-tertiary);">
+						<div class="h-full transition-all duration-300" style="background-color: var(--accent); width: ${(progreso / total) * 100}%;"></div>
+					</div>
+				</div>
+				
+				<h2 class="text-2xl font-bold mb-6" style="color: var(--text-primary);">${pregunta.pregunta}</h2>
+				
+				<div class="space-y-3" id="quiz-options">
+					${pregunta.opciones.map((opcion, idx) => `
+						<button class="quiz-option w-full text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer"
+							style="background-color: var(--bg-secondary); border-color: var(--border); color: var(--text-primary);"
+							data-index="${idx}">
+							${opcion}
+						</button>
+					`).join('')}
+				</div>
+				
+				<div id="quiz-feedback" class="mt-6 hidden p-4 rounded-xl"></div>
+				
+				<div class="mt-6 flex justify-between">
+					<button id="prev-question" class="px-4 py-2 rounded-lg font-medium cursor-pointer transition-all"
+						style="background-color: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border);"
+						${quizState.preguntaActual === 0 ? 'disabled style="opacity: 0.5;"' : ''}>
+						← Anterior
+					</button>
+					<button id="next-question" class="px-6 py-2 rounded-lg font-medium cursor-pointer transition-all hidden"
+						style="background-color: var(--accent); color: white; border: none;">
+						${progreso === total ? 'Ver Resultados' : 'Siguiente →'}
+					</button>
+				</div>
+			</div>
+		`;
+		
+		mainContent.scrollTo(0, 0);
+		
+		document.getElementById('back-to-quiz-menu')?.addEventListener('click', () => {
+			mainContent.innerHTML = homeHtml;
+			currentLeccion = null;
+			currentComando = null;
+			quizState.iniciado = false;
+		});
+		
+		document.querySelectorAll('.quiz-option').forEach(btn => {
+			btn.addEventListener('click', () => handleQuizAnswer(parseInt(btn.getAttribute('data-index'))));
+		});
+		
+		document.getElementById('prev-question')?.addEventListener('click', () => {
+			if (quizState.preguntaActual > 0) {
+				quizState.preguntaActual--;
+				showQuizQuestion();
+			}
+		});
+		
+		document.getElementById('next-question')?.addEventListener('click', () => {
+			if (quizState.preguntaActual < quizState.preguntas.length - 1) {
+				quizState.preguntaActual++;
+				showQuizQuestion();
+			} else {
+				showQuizResults();
+			}
+		});
+	}
+
+	function handleQuizAnswer(opcionIndex) {
+		const pregunta = quizState.preguntas[quizState.preguntaActual];
+		const esCorrecta = opcionIndex === pregunta.respuestaCorrecta;
+		
+		quizState.respuestas[quizState.preguntaActual] = opcionIndex;
+		
+		const opcionesBtns = document.querySelectorAll('.quiz-option');
+		const feedbackEl = document.getElementById('quiz-feedback');
+		const nextBtn = document.getElementById('next-question');
+		
+		opcionesBtns.forEach((btn, idx) => {
+			btn.disabled = true;
+			if (idx === pregunta.respuestaCorrecta) {
+				btn.style.borderColor = 'var(--success)';
+				btn.style.backgroundColor = 'rgba(46, 204, 113, 0.1)';
+			} else if (idx === opcionIndex && !esCorrecta) {
+				btn.style.borderColor = 'var(--error)';
+				btn.style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
+			}
+		});
+		
+		feedbackEl.classList.remove('hidden');
+		if (esCorrecta) {
+			feedbackEl.innerHTML = `<span style="color: var(--success);">✓ ¡Correcto!</span>`;
+			feedbackEl.style.backgroundColor = 'rgba(46, 204, 113, 0.1)';
+			feedbackEl.style.border = '1px solid var(--success)';
+		} else {
+			feedbackEl.innerHTML = `<span style="color: var(--error);">✗ Incorrecto</span> - ${pregunta.explicacion}`;
+			feedbackEl.style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
+			feedbackEl.style.border = '1px solid var(--error)';
+		}
+		
+		nextBtn.classList.remove('hidden');
+	}
+
+	function showQuizResults() {
+		if (!mainContent) return;
+		
+		const total = quizState.preguntas.length;
+		let correctas = 0;
+		const incorrectas = [];
+		
+		quizState.preguntas.forEach((pregunta, idx) => {
+			if (quizState.respuestas[idx] === pregunta.respuestaCorrecta) {
+				correctas++;
+			} else {
+				incorrectas.push({
+					pregunta: pregunta.pregunta,
+					respuestaUsuario: pregunta.opciones[quizState.respuestas[idx]] || 'Sin responder',
+					respuestaCorrecta: pregunta.opciones[pregunta.respuestaCorrecta],
+					explicacion: pregunta.explicacion
+				});
+			}
+		});
+		
+		const porcentaje = Math.round((correctas / total) * 100);
+		
+		mainContent.innerHTML = `
+			<div class="max-w-2xl mx-auto pb-20 px-8 py-8">
+				<div class="text-center mb-8">
+					<h2 class="text-3xl font-bold mb-4" style="color: var(--text-primary);">¡Quiz Completado!</h2>
+					<div class="inline-block p-8 rounded-2xl" style="background-color: var(--bg-secondary); border: 1px solid var(--border);">
+						<div class="text-6xl font-bold mb-2" style="color: var(--accent);">${porcentaje}%</div>
+						<div class="text-xl" style="color: var(--text-secondary);">${correctas} de ${total} correctas</div>
+					</div>
+				</div>
+				
+				${incorrectas.length > 0 ? `
+				<div class="mb-8">
+					<h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Respuestas incorrectas:</h3>
+					<div class="space-y-4">
+						${incorrectas.map(inc => `
+							<div class="p-4 rounded-xl border" style="background-color: var(--bg-secondary); border-color: var(--error);">
+								<p class="font-medium mb-2" style="color: var(--text-primary);">${inc.pregunta}</p>
+								<p class="text-sm" style="color: var(--error);">Tu respuesta: ${inc.respuestaUsuario}</p>
+								<p class="text-sm" style="color: var(--success);">Correcta: ${inc.respuestaCorrecta}</p>
+								<p class="text-sm mt-2" style="color: var(--text-muted);">${inc.explicacion}</p>
+							</div>
+						`).join('')}
+					</div>
+				</div>
+				` : `
+				<div class="mb-8 p-6 rounded-xl text-center" style="background-color: rgba(46, 204, 113, 0.1); border: 1px solid var(--success);">
+					<p class="text-lg" style="color: var(--success);">¡Perfecto! ¡Has acertado todas!</p>
+				</div>
+				`}
+				
+				<div class="flex gap-4 justify-center">
+					<button id="retry-quiz" class="px-6 py-3 rounded-xl font-medium cursor-pointer transition-all hover:scale-105"
+						style="background-color: var(--accent); color: white; border: none;">
+						Hacer otro quiz
+					</button>
+					<button id="back-home-quiz" class="px-6 py-3 rounded-xl font-medium cursor-pointer transition-all"
+						style="background-color: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border);">
+						Volver al inicio
+					</button>
+				</div>
+			</div>
+		`;
+		
+		mainContent.scrollTo(0, 0);
+		
+		const ranking = JSON.parse(localStorage.getItem('quizRanking') || '[]');
+		const today = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+		ranking.push({ puntuacion: correctas, total: total, fecha: today });
+		ranking.sort((a, b) => (b.puntuacion / b.total) - (a.puntuacion / a.total));
+		const top5 = ranking.slice(0, 5);
+		localStorage.setItem('quizRanking', JSON.stringify(top5));
+		
+		document.getElementById('retry-quiz')?.addEventListener('click', () => {
+			const count = parseInt(document.getElementById('quiz-count')?.value || '10');
+			startQuiz(count);
+		});
+		
+		document.getElementById('back-home-quiz')?.addEventListener('click', () => {
+			mainContent.innerHTML = homeHtml;
+			currentLeccion = null;
+			currentComando = null;
+			quizState.iniciado = false;
+		});
+	}
+
+	// Botón Quiz en home - mostrar selector de cantidad
+	const startQuizBtn = document.getElementById('start-quiz-btn');
+	startQuizBtn?.addEventListener('click', () => {
+		showQuizSelector();
+	});
+
+	// Botón primera lección
+	const startLessonBtn = document.getElementById('start-lesson-btn');
+	startLessonBtn?.addEventListener('click', () => {
+		const firstLeccion = leccionesData[0];
+		if (firstLeccion) {
+			showLeccion(firstLeccion.id);
+		}
 	});
 
 	// Favoritos
