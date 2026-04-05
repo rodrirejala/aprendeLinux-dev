@@ -82,7 +82,7 @@ export const conceptos: Concepto[] = [
 		contenido: [
 			"Las variables de entorno almacenan información como rutas, preferencias y configuraciones.",
 			"PATH indica al sistema dónde buscar ejecutables.",
-			"HOME指向用户的主目录。USER存储当前用户名。",
+			"HOME apunta al directorio personal del usuario. USER guarda el nombre de usuario actual.",
 			"Las variables pueden exportarse para que estén disponibles en procesos hijos.",
 			"Para hacer permanentes las variables, agrégalas a ~/.bashrc o /etc/environment"
 		],

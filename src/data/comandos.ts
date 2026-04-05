@@ -1013,7 +1013,7 @@ export const comandos: Comando[] = [
 		usable: [
 			{ comando: "watch -n 1 'comando'", descripcion: "Ejecuta cada segundo" },
 			{ comando: "watch -d 'comando'", descripcion: "Resalta diferencias" },
-			{ comando: "watch -n 5 'df -h'", descripcion: "监控 disco cada 5 segundos" }
+			{ comando: "watch -n 5 'df -h'", descripcion: "Monitorea disco cada 5 segundos" }
 		],
 		usos: [
 			{ comando: "watch -n 1 'comando'", descripcion: "Ejecuta cada segundo" },
