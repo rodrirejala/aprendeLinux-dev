@@ -34,26 +34,39 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 
 <Layout title="AprendeLinux.dev - Aprende Linux paso a paso">
 	<div class="flex h-screen">
-		<!-- Sidebar Fixed -->
-		<aside class="w-96 border-r flex flex-col fixed h-screen overflow-hidden" style="background-color: var(--bg-secondary); border-color: var(--border);">
+		<!-- Mobile Menu Button -->
+		<button id="mobile-menu-btn" class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg shadow-lg"
+			style="background-color: var(--bg-secondary); border: 1px solid var(--border);">
+			<svg class="w-6 h-6" style="color: var(--text-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+			</svg>
+		</button>
+
+		<!-- Sidebar (Desktop: fixed, Mobile: slide-out) -->
+		<aside id="sidebar" class="w-72 lg:w-96 border-r flex flex-col fixed lg:static h-full overflow-hidden transition-transform z-40" style="background-color: var(--bg-secondary); border-color: var(--border);">
 			<!-- Header del sidebar -->
 			<div class="p-4 border-b flex-shrink-0 pb-2" style="border-color: var(--border);">
 				<div class="flex items-center justify-between">
 					<a href="/" class="text-xl font-bold" style="color: var(--text-primary);">
 						<span style="color: var(--accent);">Aprende</span>Linux
 					</a>
-					<button id="theme-toggle" class="p-2 rounded-lg cursor-pointer transition-all duration-300 hover:scale-110" 
-						style="background-color: var(--bg-tertiary); border: 1px solid var(--border);" 
-						title="Cambiar tema">
-						<!-- Sol icon -->
-						<svg id="sun-icon" class="w-5 h-5 hidden" style="color: var(--accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-						</svg>
-						<!-- Luna icon -->
-						<svg id="moon-icon" class="w-5 h-5" style="color: var(--accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-						</svg>
-					</button>
+					<div class="flex items-center gap-2">
+						<button id="sidebar-close" class="lg:hidden p-2 rounded-lg" style="background-color: var(--bg-tertiary);">
+							<svg class="w-5 h-5" style="color: var(--text-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+							</svg>
+						</button>
+						<button id="theme-toggle" class="p-2 rounded-lg cursor-pointer transition-all duration-300 hover:scale-110" 
+							style="background-color: var(--bg-tertiary); border: 1px solid var(--border);" 
+							title="Cambiar tema">
+							<svg id="sun-icon" class="w-5 h-5 hidden" style="color: var(--accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+							</svg>
+							<svg id="moon-icon" class="w-5 h-5" style="color: var(--accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+							</svg>
+						</button>
+					</div>
 				</div>
 			</div>
 			
@@ -150,7 +163,7 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 		</aside>
 
 		<!-- Main Content -->
-		<main class="flex-1 ml-96 overflow-y-auto relative" style="background-color: var(--bg-primary);" id="main-content">
+		<main class="flex-1 lg:ml-0 overflow-y-auto relative w-full" style="background-color: var(--bg-primary);" id="main-content">
 				<!-- Fondo con iconos flotando -->
 			<div class="floating-icons fixed inset-0 pointer-events-none overflow-hidden" style="opacity: 0.08; z-index: 0;">
 				<!-- Terminal -->
@@ -244,6 +257,8 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 	const quizQuestionsData = quizQuestions;
 
 	// DOM Elements
+	const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+	const sidebar = document.getElementById('sidebar');
 	const leccionBtns = document.querySelectorAll('.leccion-btn');
 	const comandoBtns = document.querySelectorAll('.comando-btn');
 	const mainContent = document.getElementById('main-content');
@@ -256,6 +271,33 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 	const moonIcon = document.getElementById('moon-icon');
 	const searchContainer = document.getElementById('search-container');
 	const searchInput = document.getElementById('search-input');
+
+	// Mobile Menu
+	const sidebarCloseBtn = document.getElementById('sidebar-close');
+	let sidebarOpen = false;
+	function openSidebar() {
+		sidebarOpen = true;
+		document.body.classList.add('sidebar-open');
+	}
+	function closeSidebar() {
+		sidebarOpen = false;
+		document.body.classList.remove('sidebar-open');
+	}
+	mobileMenuBtn?.addEventListener('click', () => {
+		if (sidebarOpen) closeSidebar();
+		else openSidebar();
+	});
+	sidebarCloseBtn?.addEventListener('click', closeSidebar);
+	document.addEventListener('click', (e) => {
+		if (sidebarOpen && sidebar && !sidebar.contains(e.target) && !mobileMenuBtn?.contains(e.target)) {
+			closeSidebar();
+		}
+	});
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && sidebarOpen) {
+			closeSidebar();
+		}
+	});
 
 	// Theme
 	function updateThemeIcons() {
@@ -1051,6 +1093,7 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 		// Botones navegación
 		document.querySelectorAll('.nav-btn').forEach(btn => {
 			btn.addEventListener('click', () => {
+				closeSidebar();
 				const leccionId = btn.getAttribute('data-leccion-id');
 				if (leccionId) {
 					showLeccion(leccionId);
@@ -1252,6 +1295,7 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 			}
 		});
 		btn.addEventListener('click', () => {
+			closeSidebar();
 			leccionBtns.forEach(b => {
 				b.style.backgroundColor = 'transparent';
 				b.style.color = 'var(--text-secondary)';
@@ -1280,6 +1324,7 @@ const categoriasComandos = [...new Set(comandos.map(c => c.category))];
 			}
 		});
 		btn.addEventListener('click', () => {
+			closeSidebar();
 			comandoBtns.forEach(b => {
 				b.style.backgroundColor = 'transparent';
 				b.classList.remove('active');

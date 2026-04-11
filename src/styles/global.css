@@ -304,3 +304,92 @@ button {
 .floating-icons svg:nth-child(5n) {
   animation-duration: 6s;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 1023px) {
+  #mobile-menu-btn {
+    display: flex !important;
+  }
+  
+  #sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar-open #sidebar {
+    transform: translateX(0);
+  }
+  
+  .sidebar-open::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 30;
+  }
+  
+  h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  
+  button, 
+  .tab-btn {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+  
+  .px-8 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  .py-8 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  table {
+    font-size: 0.85rem;
+  }
+  
+  th, td {
+    padding: 0.5rem !important;
+  }
+  
+  .codigo-editor .codigo-content,
+  .rounded-lg.overflow-hidden.relative.group,
+  pre {
+    font-size: 0.8rem;
+  }
+  
+  code, 
+  .font-mono {
+    font-size: 0.85rem !important;
+  }
+  
+  input[type="text"],
+  input[type="search"] {
+    min-height: 44px;
+    font-size: 1rem;
+  }
+  
+  .ejercicio-input {
+    min-height: 44px;
+  }
+  
+  .quiz-option {
+    min-height: 60px;
+    padding: 1rem !important;
+  }
+}
