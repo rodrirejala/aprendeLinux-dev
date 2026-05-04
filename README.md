@@ -74,48 +74,6 @@ El proyecto incluye **21 lecciones** estructuradas para aprender Linux de forma 
 | **Tailwind CSS** | ^4.2.2 | Estilos utility-first |
 | **Shiki** | ^4.0.2 | Syntax highlighting server-side |
 
-## 🚀 ¿Por qué estas tecnologías?
-
-### Astro
-
-- **Rendimiento superior**: El contenido se pre-renderiza en build time, generando HTML estático
-- **Island Architecture**: Solo el JavaScript necesario se carga en el cliente
-- **Zero JS por defecto**: La página principal carga prácticamente sin JavaScript
-- **Excelente DX**: Componentes simples sin complejidad innecesaria
-
-### Tailwind CSS
-
-- **Desarrollo rápido**: No necesitas cambiar archivos CSS separados
-- **Consistencia**: Sistema de diseño integrado con variables CSS
-- **Personalizable**: Soporte nativo para temas claros/oscuros
-- **Purge friendly**: Solo incluye las clases que usas en el build final
-
-### Shiki
-
-- **Server-side rendering**: El syntax highlighting se genera en build, no en el cliente
-- **Sin JavaScript extra**: No carga librerías en el navegador para resaltar código
-- **Temas hermosos**: Integración perfecta con temas populares como GitHub Dark
-- **Performance**: Generación en build, cero overhead en runtime
-
-## 🚀 Despliegue e Infraestructura
-
-Este proyecto se encuentra desplegado utilizando una arquitectura de alto rendimiento y control total, aprovechando las capacidades de **CubePath** y el orquestador **Dokploy**.
-
-### 🏗️ Stack Tecnológico
-* **Hosting:** [CubePath](https://cubepath.com/) (VPS Cloud de alta disponibilidad).
-* **PaaS:** [Dokploy](https://dokploy.com/) (Gestión de contenedores y despliegue continuo).
-* **Framework:** [Astro](https://astro.build/).
-
-### 🛠️ Configuración del Servidor
-Para garantizar un despliegue ágil y escalable, segui este flujo:
-
-1.  **Aprovisionamiento en CubePath:**
-    * Utilize la opción de **"Apps 1-Click"** de CubePath para levantar un VPS optimizado con **Dokploy**. Esto me permitió saltarnos la configuración manual del servidor. 
-3.  **Gestión con Dokploy:**
-    * Configure un panel de control autogestionado dentro del VPS.
-    * Conecte este repositorio de GitHub para habilitar **CI/CD** automático.
-4.  **Build de Astro:**
-    * Dokploy se encarga de detectar los cambios en la rama principal, ejecutar el proceso de construcción de Astro y servir los archivos estáticos (o SSR) mediante un contenedor Docker optimizado.
 
 # 📂 Estructura del Proyecto
 
